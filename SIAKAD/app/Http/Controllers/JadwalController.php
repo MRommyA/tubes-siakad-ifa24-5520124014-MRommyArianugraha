@@ -6,17 +6,33 @@ use App\Models\Dosen;
 use App\Models\Jadwal;
 use App\Models\Matakuliah;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class JadwalController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $data['jadwal'] = Jadwal::with(['dosen', 'matakuliah'])->get();
+        $search = $request->keyword;
 
-        return view('pages.jadwal.daftar-jadwal', $data);
+        $jadwal = Jadwal::with(['dosen', 'matakuliah'])
+            ->when($search, function($query, $search) {
+                return $query->where('kelas', 'like', "%{$search}%")
+                            ->orWhere('hari', 'like', "%{$search}%")
+                            ->orWhereHas('dosen', function($q) use ($search) {
+                                $q->where('nama', 'like', "%{$search}%");
+                            })
+                            ->orWhereHas('matakuliah', function($q) use ($search) {
+                                $q->where('nama_matakuliah', 'like', "%{$search}%");
+                            });
+            })
+            ->orderBy('hari', 'asc')
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('pages.jadwal.daftar-jadwal', compact('jadwal'));
     }
 
     /**
@@ -38,7 +54,7 @@ class JadwalController extends Controller
         $validated = $request->validate([
             'kode_matakuliah' => 'required|exists:matakuliah,kode_matakuliah',
             'nidn'            => 'required|exists:dosen,nidn',
-            'kelas'           => 'required|in:A,B,C,D,E,F',
+            'kelas'           => 'required|in:A,B,C,D,E',
             'hari'            => 'required|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu',
             'jam'             => 'required|date_format:H:i',
         ]);
@@ -88,7 +104,7 @@ class JadwalController extends Controller
         $validated = $request->validate([
             'kode_matakuliah' => 'required|exists:matakuliah,kode_matakuliah',
             'nidn'            => 'required|exists:dosen,nidn',
-            'kelas'           => 'required|in:A,B,C,D,E,F',
+            'kelas'           => 'required|in:A,B,C,D,E',
             'hari'            => 'required|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu',
             'jam'             => 'required|date_format:H:i',
         ]);

@@ -12,6 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
+            $table->string('username')->unique()->after('id');
             $table->char('npm', 10)->nullable();
 
             $table->foreign('npm')->references('npm')->on('mahasiswa')->onDelete('set null');
