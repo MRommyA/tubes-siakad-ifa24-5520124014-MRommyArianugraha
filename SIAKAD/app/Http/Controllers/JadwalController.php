@@ -56,7 +56,7 @@ class JadwalController extends Controller
             'nidn'            => 'required|exists:dosen,nidn',
             'kelas'           => 'required|in:A,B,C,D,E',
             'hari'            => 'required|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu',
-            'jam'             => 'required|date_format:H:i',
+            'jam'             => 'required|in:08:00,10:30,13:00,15:30,18:30'
         ]);
 
         $konflik = Jadwal::where('hari', $validated['hari'])
@@ -106,7 +106,7 @@ class JadwalController extends Controller
             'nidn'            => 'required|exists:dosen,nidn',
             'kelas'           => 'required|in:A,B,C,D,E',
             'hari'            => 'required|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu',
-            'jam'             => 'required|date_format:H:i',
+            'jam' => 'required|in:08:00,10:30,13:00,15:30,18:30'
         ]);
 
         $konflik = Jadwal::where('hari', $validated['hari'])

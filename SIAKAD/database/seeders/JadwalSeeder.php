@@ -5,6 +5,8 @@ namespace Database\Seeders;
 use App\Models\Jadwal;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Faker\Factory as Faker;
+use Illuminate\Support\Facades\DB;
 
 class JadwalSeeder extends Seeder
 {
@@ -13,14 +15,20 @@ class JadwalSeeder extends Seeder
      */
     public function run(): void
     {
-        $listJadwal = [
-            ['kode_matakuliah' => 'IF350122', 'nidn' => '0001234501', 'kelas' => 'A', 'hari' => 'Senin', 'jam' => '2026-06-30 08:00:00'],
-            ['kode_matakuliah' => 'IF451223', 'nidn' => '0001234502', 'kelas' => 'B', 'hari' => 'Rabu', 'jam' => '2026-06-30 10:30:00'],
-            ['kode_matakuliah' => 'IF460223', 'nidn' => '0001234503', 'kelas' => 'A', 'hari' => 'Sabtu', 'jam' => '2026-06-30 13:00:00']
-        ];
+        $faker = Faker::create('id_ID');
 
-        foreach($listJadwal as $jadwal){
-            Jadwal::create($jadwal);
+        $jam = ['08:00:00', '10:30:00', '13:00:00', '15:30:00', '18:30:00'];
+
+        for ($i = 0; $i < 13; $i++) {
+            Jadwal::create([
+                'kode_matakuliah' => DB::table('matakuliah')->inRandomOrder()->value('kode_matakuliah'),
+                'nidn' => DB::table('dosen')->inRandomOrder()->value('nidn'),
+                'kelas' => $faker->randomElement(['A', 'B', 'C', 'D', 'E']),
+                'hari' => $faker->randomElement(['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu']),
+                'jam' => '2026-06-30 ' . $faker->randomElement($jam),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
         }
     }
 }

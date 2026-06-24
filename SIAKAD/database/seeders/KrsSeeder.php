@@ -5,6 +5,8 @@ namespace Database\Seeders;
 use App\Models\Krs;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Faker\Factory as Faker;
 
 class KrsSeeder extends Seeder
 {
@@ -14,20 +16,22 @@ class KrsSeeder extends Seeder
     public function run(): void
     {
 
-        $krsList = [
-            ['npm' => '5520123001', 'kode_matakuliah' => 'IF460223'],
-            ['npm' => '5520123001', 'kode_matakuliah' => 'IF451223'],
-            ['npm' => '5520123002', 'kode_matakuliah' => 'IF451223'],
-            ['npm' => '5520124001', 'kode_matakuliah' => 'IF451223'],
-            ['npm' => '5520124001', 'kode_matakuliah' => 'IF350122'],
-            ['npm' => '5520124001', 'kode_matakuliah' => 'IF460223'],
-            ['npm' => '5520124002', 'kode_matakuliah' => 'IF350122'],
-            ['npm' => '5520124003', 'kode_matakuliah' => 'IF350122']
-        ];
+        $faker = Faker::create('id_ID');
 
-        foreach($krsList as $krs){
-            Krs::create($krs);
-        };
+        $mahasiswas = DB::table('mahasiswa')->pluck('npm');
+        $matakuliahs = DB::table('matakuliah')->pluck('kode_matakuliah');
+
+        foreach ($mahasiswas as $npm) {
+            $num = $faker->numberBetween(2, 6);
+            foreach ($matakuliahs->random($num) as $kode) {
+                Krs::create([
+                    'npm' => $npm,
+                    'kode_matakuliah' => $kode,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
+            }
+        }
 
     }
 }

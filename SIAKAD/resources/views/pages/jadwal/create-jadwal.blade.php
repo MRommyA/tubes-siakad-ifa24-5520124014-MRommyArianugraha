@@ -88,10 +88,19 @@
 
             <div class="mb-3">
                 <label class="form-label">Jam Mulai <span class="text-danger">*</span></label>
-                <input type="time"
-                       name="jam"
-                       value="{{ old('jam', isset($jadwal) ? \Carbon\Carbon::parse($jadwal->jam)->format('H:i') : '') }}"
-                       class="form-control @error('jam') is-invalid @enderror">
+                <select name="jam"
+                        class="form-select @error('jam') is-invalid @enderror">
+                    <option value="">-- Pilih Jam --</option>
+                    @php
+                        $slots = ['08:00', '10:30', '13:00', '15:30', '18:30'];
+                    @endphp
+                    @foreach($slots as $slot)
+                        <option value="{{ $slot }}"
+                            {{ old('jam', isset($jadwal) ? \Carbon\Carbon::parse($jadwal->jam)->format('H:i') : '') == $slot ? 'selected' : '' }}>
+                            {{ $slot }}
+                        </option>
+                    @endforeach
+                </select>
                 @error('jam')
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror

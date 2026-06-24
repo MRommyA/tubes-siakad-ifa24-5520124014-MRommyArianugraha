@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Dosen;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Faker\Factory as Faker;
 use Illuminate\Database\Seeder;
 
 class DosenSeeder extends Seeder
@@ -13,14 +14,18 @@ class DosenSeeder extends Seeder
      */
     public function run(): void
     {
-        $dosenList = [
-            ['nidn' => '0001234501', 'nama' => 'Jiraya'],
-            ['nidn' => '0001234502', 'nama' => 'Namikaze Minato'],
-            ['nidn' => '0001234503', 'nama' => 'Hatake Kakashi'],
-        ];
+        $faker = Faker::create('id_ID');
 
-        foreach ($dosenList as $dosen) {
+        for($i = 0; $i < 10; $i++){
+            $dosen = [
+                'nidn' => $faker->unique()->numerify('##########'),
+                'nama' => $faker->name,
+                'created_at' => now(),
+                'updated_at' => now()
+            ];
+
             Dosen::create($dosen);
         }
+        
     }
 }

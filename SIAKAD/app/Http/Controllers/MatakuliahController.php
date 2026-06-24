@@ -41,7 +41,7 @@ class MatakuliahController extends Controller
     {
         $validated = $request->validate(
             [
-                'kode_matakuliah' => 'required|size:8|unique:matakuliah,kode_matakuliah',
+                'kode_matakuliah' => 'required|min:7|max:8|unique:matakuliah,kode_matakuliah',
                 'nama_matakuliah' => 'required|max:50',
                 'sks' => 'required|integer|in:1,2,3,4,5,6'
             ]
@@ -76,7 +76,7 @@ class MatakuliahController extends Controller
     {
         $validated = $request->validate(
             [
-                'kode_matakuliah' => 'required|size:8|unique:matakuliah,kode_matakuliah,' . $id . ',kode_matakuliah',
+                'kode_matakuliah' => 'required|min:7|max:8|unique:matakuliah,kode_matakuliah,' . $id . ',kode_matakuliah',
                 'nama_matakuliah' => 'required|max:50',
                 'sks' => 'required|integer|in:1,2,3,4,5,6'
             ]

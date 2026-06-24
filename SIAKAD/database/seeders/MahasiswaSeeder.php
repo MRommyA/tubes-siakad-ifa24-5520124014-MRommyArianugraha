@@ -7,6 +7,8 @@ use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Faker\Factory as Faker;
+use Illuminate\Support\Facades\DB;
 
 class MahasiswaSeeder extends Seeder
 {
@@ -15,13 +17,19 @@ class MahasiswaSeeder extends Seeder
      */
     public function run(): void
     {
-        $mahasiswaList = [
-            ['npm' => '5520124001', 'nidn' => '0001234501', 'nama' => 'Uzumaki Naruto'],
-            ['npm' => '5520123001', 'nidn' => '0001234502', 'nama' => 'Nohara Rin'],
-            ['npm' => '5520123002', 'nidn' => '0001234502', 'nama' => 'Uchiha Obito'],
-            ['npm' => '5520124002', 'nidn' => '0001234503', 'nama' => 'Uchiha Sasuke'],
-            ['npm' => '5520124003', 'nidn' => '0001234503', 'nama' => 'Haruno Sakura']
-        ];
+        $faker = Faker::create('id_ID');
+
+        $mahasiswaList = [];
+        for($i = 0; $i < 10; $i++){
+            $npm = '55201' . $faker->randomElement(['22', '23', '24', '25']) . $faker->unique()->numerify('###');
+            $mahasiswaList[] = [
+                'npm' => $npm,
+                'nidn' => DB::table('dosen')->inRandomOrder()->value('nidn'),
+                'nama' => $faker->name,
+                'created_at' => now(),
+                'updated_at' => now()
+            ];
+        }
 
         foreach($mahasiswaList as $data){
             $mahasiswa = Mahasiswa::create($data);
@@ -29,7 +37,7 @@ class MahasiswaSeeder extends Seeder
             $user = User::create([
                 'name'     => $mahasiswa->nama,
                 'username' => $mahasiswa->npm,
-                'email'    => strtolower(str_replace(' ', '', $mahasiswa->nama)) . '@gmail.com',
+                'email'    => $mahasiswa->npm . '@student.unsur.ac.id', 
                 'password' => Hash::make('password'),
                 'npm'      => $mahasiswa->npm,
             ]);
