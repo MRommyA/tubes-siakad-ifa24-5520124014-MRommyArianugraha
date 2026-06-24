@@ -24,7 +24,7 @@
                        name="kode_matakuliah"
                        value="{{ old('kode_matakuliah', $matakuliah->kode_matakuliah ?? '') }}"
                        class="form-control @error('kode_matakuliah') is-invalid @enderror"
-                       placeholder="Masukkan kode mata kuliah (8 karakter)"
+                       placeholder="Masukkan kode mata kuliah"
                        {{ isset($matakuliah) ? 'readonly' : '' }}>
                 @error('kode_matakuliah')
                     <div class="invalid-feedback">{{ $message }}</div>

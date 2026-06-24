@@ -19,8 +19,10 @@ class JadwalController extends Controller
 
         $jadwal = Jadwal::with(['dosen', 'matakuliah'])
             ->when($search, function($query, $search) {
-                return $query->where('kelas', 'like', "%{$search}%")
-                            ->orWhere('hari', 'like', "%{$search}%")
+                if (preg_match('/^[A-Fa-f]$/', $search)) {
+                    return $query->where('kelas', strtoupper($search));
+                }
+                return $query->where('hari', 'like', "%{$search}%")
                             ->orWhereHas('dosen', function($q) use ($search) {
                                 $q->where('nama', 'like', "%{$search}%");
                             })
@@ -59,14 +61,35 @@ class JadwalController extends Controller
             'jam'             => 'required|in:08:00,10:30,13:00,15:30,18:30'
         ]);
 
-        $konflik = Jadwal::where('hari', $validated['hari'])
+        $konflikKelas = Jadwal::where('hari', $validated['hari'])
             ->where('jam', '2026-06-30 ' . $validated['jam'] . ':00')
             ->where('kelas', $validated['kelas'])
             ->exists();
 
-        if ($konflik) {
+        if ($konflikKelas) {
             return back()->withErrors([
                 'hari' => 'Jadwal kelas ' . $validated['kelas'] . ' hari ' . $validated['hari'] . ' jam ' . $validated['jam'] . ' sudah ada.'
+            ])->withInput();
+        }
+
+        $konflikDosen = Jadwal::where('nidn', $request->nidn)
+            ->where('hari', $request->hari)
+            ->where('jam', '2026-06-30 ' . $request->jam . ':00')
+            ->exists();
+
+        if ($konflikDosen) {
+            $jadwalDosen = Jadwal::with('matakuliah')
+                ->where('nidn', $request->nidn)
+                ->where('hari', $request->hari)
+                ->where('jam', '2026-06-30 ' . $request->jam . ':00')
+                ->first();
+
+            return back()->withErrors([
+                'nidn' => 'Dosen ini sudah mengajar ' .
+                        ($jadwalDosen->matakuliah->nama_matakuliah ?? '-') .
+                        ' di kelas ' . $jadwalDosen->kelas .
+                        ' pada hari ' . $request->hari .
+                        ' jam ' . $request->jam . '.'
             ])->withInput();
         }
 
@@ -109,23 +132,47 @@ class JadwalController extends Controller
             'jam' => 'required|in:08:00,10:30,13:00,15:30,18:30'
         ]);
 
-        $konflik = Jadwal::where('hari', $validated['hari'])
-            ->where('jam', '2026-06-30 ' . $validated['jam'] . ':00')
-            ->where('kelas', $validated['kelas'])
+        $konflikKelas = Jadwal::where('hari', $request->hari)
+            ->where('kelas', $request->kelas)
+            ->where('jam', '2026-06-30 ' . $request->jam . ':00')
             ->where('id', '!=', $id)
             ->exists();
 
-        if ($konflik) {
+        if ($konflikKelas) {
             return back()->withErrors([
-                'hari' => 'Jadwal kelas ' . $validated['kelas'] . ' hari ' . $validated['hari'] . ' jam ' . $validated['jam'] . ' sudah ada.'
+                'jam' => 'Kelas ' . $request->kelas . ' pada hari ' . $request->hari .
+                        ' jam ' . $request->jam . ' sudah ada jadwal lain.'
             ])->withInput();
         }
 
-        $validated['jam'] = '2000-01-01 ' . $validated['jam'] . ':00';
+        $konflikDosen = Jadwal::where('nidn', $request->nidn)
+            ->where('hari', $request->hari)
+            ->where('jam', '2026-06-30 ' . $request->jam . ':00')
+            ->where('id', '!=', $id)
+            ->exists();
+
+        if ($konflikDosen) {
+            $jadwalDosen = Jadwal::with('matakuliah')
+                ->where('nidn', $request->nidn)
+                ->where('hari', $request->hari)
+                ->where('jam', '2026-06-30 ' . $request->jam . ':00')
+                ->where('id', '!=', $id)
+                ->first();
+
+            return back()->withErrors([
+                'nidn' => 'Dosen ini sudah mengajar ' .
+                        ($jadwalDosen->matakuliah->nama_matakuliah ?? '-') .
+                        ' di kelas ' . $jadwalDosen->kelas .
+                        ' pada hari ' . $request->hari .
+                        ' jam ' . $request->jam . '.'
+            ])->withInput();
+        }
+
+        $validated['jam'] = '2026-06-30 ' . $validated['jam'] . ':00';
 
         Jadwal::where('id', $id)->update($validated);
 
-        return redirect()->route('jadwal.index')->with('success', 'Data Jadwal berhasil dirubah!');
+        return redirect()->route('jadwal.index')->with('success', 'Data Jadwal berhasil diperbarui!');
     }
 
     /**

@@ -65,7 +65,7 @@
                                 </div>
                                 <div class="modal-body">
                                     Mata kuliah <strong>{{ $k->matakuliah->nama_matakuliah ?? '-' }}</strong>
-                                    akan di-drop dari KRS kamu.
+                                    akan di-drop dari KRS Anda.
                                     Tindakan ini tidak dapat dibatalkan.
                                 </div>
                                 <div class="modal-footer">

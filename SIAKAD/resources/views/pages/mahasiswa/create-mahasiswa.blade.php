@@ -31,7 +31,7 @@
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
                 @if(isset($mahasiswa))
-                    <small class="text-muted">NPM tidak dapat diubah karena merupakan primary key.</small>
+                    <small class="text-muted">NPM tidak dapat diubah.</small>
                 @endif
             </div>
 
@@ -63,19 +63,6 @@
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
             </div>
-
-            @if(!isset($mahasiswa))
-            <div class="mb-3">
-                <label class="form-label">Password <span class="text-danger">*</span></label>
-                <input type="password" name="password"
-                       class="form-control @error('password') is-invalid @enderror"
-                       placeholder="Minimal 6 karakter">
-                @error('password')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
-                <small class="text-muted">Default password: <strong>password</strong> (bisa diubah nanti)</small>
-            </div>
-            @endif
 
             <div class="d-flex gap-2">
                 <button type="submit" class="btn btn-primary">
