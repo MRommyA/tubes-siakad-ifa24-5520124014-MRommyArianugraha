@@ -39,7 +39,7 @@ Aplikasi web berbasis **Laravel** yang mensimulasikan Sistem Informasi Akademik 
   - Batas maksimal **24 SKS**
   - Export KRS ke **PDF**
 
-Akses Apilikasi URL : 
+## Akses Apilikasi URL : https://rommy.ifalgorithm24.web.id
 
 ## Akun Default
 
